@@ -1,0 +1,2854 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>인성체크리스트 - 초등학생 자기성찰 및 인성 성장 맞춤형 지원</title>
+  <meta name="description" content="초등학교 학생과 담임교사를 위한 인성덕목(배려·존중·책임·정직·협동) 자기성찰 및 맞춤형 AI 성장 지원 시스템">
+  
+  <style>
+    /* ===== RESET & ROOT VARIABLES ===== */
+    :root {
+      --bg-canvas: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-muted: #f1f5f9;
+      --border-subtle: #e2e8f0;
+      --border-focus: #3b82f6;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      
+      /* 덕목별 테마 컬러 */
+      --care-color: #0284c7;     /* 배려: 청량한 하늘 */
+      --respect-color: #ec4899;  /* 존중: 따뜻한 핑크 */
+      --resp-color: #f59e0b;     /* 책임: 든든한 호박 */
+      --honest-color: #10b981;   /* 정직: 싱그러운 초록 */
+      --coop-color: #8b5cf6;     /* 협동: 지혜로운 보라 */
+      
+      --accent-primary: #10b981;
+      --accent-hover: #059669;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", Roboto, "Noto Sans KR", sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      line-height: 1.6;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== HEADER (3-ZONE TOP BAR) ===== */
+    .top-header {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-container {
+      max-width: 1520px;
+      margin: 0 auto;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .brand-zone {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #10b981 0%, #0284c7 100%);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: #ffffff;
+      box-shadow: 0 2px 4px rgba(16, 185, 129, 0.25);
+    }
+
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #0f172a;
+    }
+
+    .brand-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: -2px;
+    }
+
+    .mode-selector {
+      display: flex;
+      background: var(--bg-muted);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      gap: 4px;
+    }
+
+    .mode-btn {
+      border: none;
+      background: transparent;
+      padding: 0.5rem 1rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .mode-btn.active {
+      background: var(--bg-surface);
+      color: var(--text-main);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .select-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .custom-select, .custom-date-input {
+      padding: 0.45rem 0.75rem;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .custom-select:focus, .custom-date-input:focus {
+      border-color: var(--border-focus);
+    }
+
+    .header-action-btn {
+      padding: 0.45rem 0.85rem;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      color: var(--text-main);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .header-action-btn:hover {
+      background: var(--bg-muted);
+    }
+
+    /* ===== PROGRESS & NOTIFICATION BAR ===== */
+    .status-strip {
+      background: #eff6ff;
+      border-bottom: 1px solid #dbeafe;
+      padding: 0.65rem 1.5rem;
+    }
+
+    .status-strip-inner {
+      max-width: 1520px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .student-badge-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1e3a8a;
+    }
+
+    .role-indicator {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      background: #3b82f6;
+      color: #ffffff;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .progress-box {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 260px;
+    }
+
+    .progress-bar-bg {
+      flex: 1;
+      height: 10px;
+      background: #e2e8f0;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #0284c7);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ===== MAIN 3-COLUMN LAYOUT ===== */
+    .app-main {
+      max-width: 1520px;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr 420px;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    /* 태블릿 / 작은 화면 대응 */
+    @media (max-width: 1280px) {
+      .workspace-grid {
+        grid-template-columns: 260px 1fr;
+      }
+      .right-column {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .workspace-grid {
+        grid-template-columns: 1fr;
+      }
+      .left-column {
+        position: static;
+      }
+    }
+
+    /* ===== LEFT COLUMN ===== */
+    .left-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      position: sticky;
+      top: 5rem;
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .nav-virtue-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      list-style: none;
+    }
+
+    .nav-virtue-item {
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+    }
+
+    .nav-virtue-item:hover {
+      background: var(--bg-muted);
+      color: var(--text-main);
+    }
+
+    .nav-virtue-item.active {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #bfdbfe;
+      font-weight: 700;
+    }
+
+    .badge-count {
+      font-size: 0.75rem;
+      padding: 0.15rem 0.45rem;
+      background: var(--border-subtle);
+      border-radius: 999px;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .nav-virtue-item.active .badge-count {
+      background: #3b82f6;
+      color: #ffffff;
+    }
+
+    .domain-filter-group {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .domain-filter-btn {
+      flex: 1;
+      padding: 0.5rem 0.25rem;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-muted);
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .domain-filter-btn.active {
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+    }
+
+    /* 척도 가이드 */
+    .scale-guide-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+    }
+
+    .scale-guide-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.4rem 0.6rem;
+      background: var(--bg-muted);
+      border-radius: var(--radius-sm);
+    }
+
+    .scale-pill {
+      font-weight: 800;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .scale-1 { background-color: #94a3b8; }
+    .scale-2 { background-color: #38bdf8; }
+    .scale-3 { background-color: #34d399; }
+    .scale-4 { background-color: #10b981; }
+    .scale-none { background-color: #64748b; }
+
+    /* ===== CENTER COLUMN (QUESTIONS) ===== */
+    .center-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .section-banner {
+      background: linear-gradient(135deg, #ecfdf5 0%, #eff6ff 100%);
+      border: 1px solid #bbf7d0;
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .banner-text h2 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #065f46;
+      margin-bottom: 0.25rem;
+    }
+
+    .banner-text p {
+      font-size: 0.9rem;
+      color: #047857;
+    }
+
+    .filter-summary {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      background: #ffffff;
+      padding: 0.4rem 0.8rem;
+      border-radius: 999px;
+      border: 1px solid #bfdbfe;
+      white-space: nowrap;
+    }
+
+    .question-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .question-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+
+    .question-card.answered {
+      border-color: #a7f3d0;
+      background: #fafdfb;
+    }
+
+    .question-card.highlight-missing {
+      border-color: #f87171 !important;
+      background: #fef2f2 !important;
+      animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2); }
+      to { box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.4); }
+    }
+
+    .question-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.6rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .question-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .virtue-tag {
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .tag-배려 { background: var(--care-color); }
+    .tag-존중 { background: var(--respect-color); }
+    .tag-책임 { background: var(--resp-color); }
+    .tag-정직 { background: var(--honest-color); }
+    .tag-협동 { background: var(--coop-color); }
+
+    .domain-tag {
+      padding: 0.2rem 0.5rem;
+      background: var(--bg-muted);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .peer-reference-badge {
+      font-size: 0.8rem;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e40af;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .question-text {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .score-buttons-group {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr) auto;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    @media (max-width: 600px) {
+      .score-buttons-group {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .score-option-btn {
+      padding: 0.75rem 0.5rem;
+      background: var(--bg-surface);
+      border: 2px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.15s ease;
+      outline: none;
+    }
+
+    .score-option-btn:hover {
+      border-color: #cbd5e1;
+      background: var(--bg-muted);
+    }
+
+    .score-option-btn.selected {
+      border-color: #10b981;
+      background: #ecfdf5;
+      box-shadow: 0 0 0 1px #10b981;
+    }
+
+    .score-option-btn.selected-teacher {
+      border-color: #3b82f6;
+      background: #eff6ff;
+      box-shadow: 0 0 0 1px #3b82f6;
+    }
+
+    .score-option-btn .score-num {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .score-option-btn .score-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .score-option-btn.selected .score-num {
+      color: #065f46;
+    }
+    .score-option-btn.selected-teacher .score-num {
+      color: #1e40af;
+    }
+
+    .btn-not-observed {
+      padding: 0.75rem 0.65rem;
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: var(--radius-md);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #64748b;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      transition: all 0.15s;
+    }
+
+    .btn-not-observed.selected {
+      background: #f1f5f9;
+      border-color: #64748b;
+      color: #0f172a;
+      box-shadow: 0 0 0 1px #64748b;
+    }
+
+    .submit-bar {
+      margin-top: 1rem;
+      padding: 1.25rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .primary-save-btn {
+      padding: 0.85rem 1.75rem;
+      background: #10b981;
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+      transition: all 0.15s;
+    }
+
+    .primary-save-btn:hover {
+      background: #059669;
+      transform: translateY(-1px);
+    }
+
+    .quick-fill-btn {
+      padding: 0.65rem 1.1rem;
+      background: var(--bg-muted);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .quick-fill-btn:hover {
+      background: #e2e8f0;
+      color: var(--text-main);
+    }
+
+    /* ===== RIGHT COLUMN (RESULTS & AI FEEDBACK) ===== */
+    .right-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* 비교 차트 카드 */
+    .chart-container {
+      margin: 1rem 0 0.5rem 0;
+    }
+
+    .virtue-compare-row {
+      margin-bottom: 0.85rem;
+    }
+
+    .compare-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .compare-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .bar-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .bar-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      width: 48px;
+      color: var(--text-muted);
+    }
+
+    .bar-track {
+      flex: 1;
+      height: 12px;
+      background: var(--bg-muted);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar-fill-student {
+      height: 100%;
+      background: #10b981;
+      border-radius: 6px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .bar-fill-teacher {
+      height: 100%;
+      background: #3b82f6;
+      border-radius: 6px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .bar-value {
+      font-size: 0.75rem;
+      font-weight: 800;
+      width: 32px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* AI 피드백 카드 */
+    .ai-card {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid #c7d2fe;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ai-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #10b981);
+    }
+
+    .ai-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .ai-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ai-badge {
+      background: #e0e7ff;
+      color: #3730a3;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+
+    .ai-section-box {
+      margin-bottom: 1rem;
+      padding: 0.85rem;
+      border-radius: var(--radius-md);
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .ai-section-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .ai-text {
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: #334155;
+    }
+
+    .goal-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+    }
+
+    .goal-item-btn {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      background: #f1f5f9;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #1e293b;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .goal-item-btn:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+
+    .goal-item-btn.selected {
+      background: #ecfdf5;
+      border-color: #10b981;
+      color: #065f46;
+      font-weight: 700;
+    }
+
+    /* ===== BOTTOM SECTION (FINAL SELF-EVALUATION & GROWTH) ===== */
+    .bottom-section {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 960px) {
+      .bottom-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .final-eval-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.75rem;
+    }
+
+    .final-eval-table th {
+      text-align: left;
+      padding: 0.6rem 0.5rem;
+      background: var(--bg-muted);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .final-eval-table td {
+      padding: 0.75rem 0.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: middle;
+      font-size: 0.95rem;
+    }
+
+    .final-score-selector {
+      display: flex;
+      gap: 0.35rem;
+    }
+
+    .final-score-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .final-score-btn.active {
+      background: #10b981;
+      color: #ffffff;
+      border-color: #10b981;
+    }
+
+    .goal-input-wrap {
+      margin-top: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .goal-input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .goal-input:focus {
+      border-color: var(--border-focus);
+    }
+
+    .final-action-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      background: var(--bg-surface);
+      padding: 1.25rem 1.5rem;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-finish-all {
+      padding: 0.85rem 2rem;
+      background: linear-gradient(135deg, #10b981 0%, #0284c7 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 1.1rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
+      transition: all 0.2s;
+    }
+
+    .btn-finish-all:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(2, 132, 199, 0.4);
+    }
+
+    /* 성장 기록 카드 */
+    .growth-history-box {
+      margin-top: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .growth-item {
+      padding: 0.75rem;
+      background: var(--bg-muted);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .growth-badge-positive {
+      color: #059669;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+    .growth-badge-neutral {
+      color: #64748b;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    /* ===== MODALS ===== */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-dialog {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      background: #f8fafc;
+    }
+
+    /* 학급 현황 테이블 */
+    .class-summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .class-summary-table th, .class-summary-table td {
+      padding: 0.6rem 0.5rem;
+      border: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+
+    .class-summary-table th {
+      background: var(--bg-muted);
+      font-weight: 700;
+    }
+
+    .status-done {
+      color: #059669;
+      font-weight: 700;
+    }
+    .status-wait {
+      color: #94a3b8;
+    }
+
+    /* 코드 블록 */
+    .code-view {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.8rem;
+      overflow-x: auto;
+      max-height: 250px;
+      line-height: 1.4;
+      white-space: pre;
+    }
+
+    /* 토스트 알림 */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toast-msg {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 0.8rem 1.2rem;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 인쇄 모드 최적화 */
+    @media print {
+      .top-header, .status-strip, .left-column, .submit-bar, .modal-backdrop, .toast-container, .btn-finish-all, .quick-fill-btn {
+        display: none !important;
+      }
+      .workspace-grid {
+        display: block !important;
+      }
+      .card {
+        border: 1px solid #000;
+        box-shadow: none;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== TOP HEADER ===== -->
+  <header class="top-header">
+    <div class="header-container">
+      <!-- Zone 1: 브랜드 영역 -->
+      <a href="#" class="brand-zone">
+        <div class="brand-icon">🌱</div>
+        <div>
+          <div class="brand-title">인성체크리스트</div>
+          <div class="brand-subtitle">초등학생 자기성찰 &amp; 인성 성장 맞춤형 지원</div>
+        </div>
+      </a>
+
+      <!-- Zone 2: 역할 모드 전환 (학생 자기평가 / 교사 관찰평가) -->
+      <div class="mode-selector">
+        <button id="btnStudentMode" class="mode-btn active" onclick="switchRoleMode('student')">
+          <span>🌱</span> 학생 자기평가
+        </button>
+        <button id="btnTeacherMode" class="mode-btn" onclick="switchRoleMode('teacher')">
+          <span>👨‍🏫</span> 교사 관찰평가
+        </button>
+      </div>
+
+      <!-- Zone 3: 학생 선택 및 유틸리티 버튼 -->
+      <div class="top-controls">
+        <div class="select-wrapper">
+          <label for="studentSelect">학생:</label>
+          <select id="studentSelect" class="custom-select" onchange="onStudentChange()"></select>
+        </div>
+
+        <div class="select-wrapper">
+          <label for="evalRoundSelect">회차:</label>
+          <select id="evalRoundSelect" class="custom-select" onchange="onRoundChange()">
+            <option value="1">1회차 평가</option>
+            <option value="2">2회차 평가</option>
+          </select>
+        </div>
+
+        <div class="select-wrapper">
+          <input type="date" id="evalDateInput" class="custom-date-input" onchange="onDateChange()">
+        </div>
+
+        <button class="header-action-btn" onclick="openClassDashboardModal()">
+          <span>📊</span> 학급 현황
+        </button>
+        <button class="header-action-btn" onclick="openSyncSettingsModal()">
+          <span>☁️</span> 구글 시트 연동
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== 진행 상황 스트립 ===== -->
+  <div class="status-strip">
+    <div class="status-strip-inner">
+      <div class="student-badge-wrap">
+        <span id="roleIndicatorBadge" class="role-indicator">학생 모드</span>
+        <span id="currentStudentTitle">학생01 (S01) · 3학년 1반</span>
+        <span style="font-weight: 500; font-size: 0.85rem; color: #4b5563;">
+          | 인성덕목(배려·존중·책임·정직·협동) 체크리스트
+        </span>
+      </div>
+      <div class="progress-box">
+        <div class="progress-bar-bg">
+          <div id="progressBarFill" class="progress-bar-fill"></div>
+        </div>
+        <div id="progressText" class="progress-text">0 / 20 완료 (0%)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 3-COLUMN WORKSPACE ===== -->
+  <main class="app-main">
+    <div class="workspace-grid">
+      
+      <!-- [왼쪽 영역] 덕목 네비게이션 & 척도 안내 -->
+      <aside class="left-column">
+        <!-- 5대 덕목 필터 -->
+        <div class="card">
+          <div class="card-title">
+            <span>📚</span> 인성덕목 바로가기
+          </div>
+          <ul class="nav-virtue-list" id="virtueNavList">
+            <li class="nav-virtue-item active" onclick="setVirtueFilter('all')">
+              <span>전체 보기</span>
+              <span class="badge-count" id="countAll">20</span>
+            </li>
+            <li class="nav-virtue-item" onclick="setVirtueFilter('배려')">
+              <span>🤝 배려</span>
+              <span class="badge-count" id="count배려">4</span>
+            </li>
+            <li class="nav-virtue-item" onclick="setVirtueFilter('존중')">
+              <span>💖 존중</span>
+              <span class="badge-count" id="count존중">4</span>
+            </li>
+            <li class="nav-virtue-item" onclick="setVirtueFilter('책임')">
+              <span>🎒 책임</span>
+              <span class="badge-count" id="count책임">4</span>
+            </li>
+            <li class="nav-virtue-item" onclick="setVirtueFilter('정직')">
+              <span>🕊️ 정직</span>
+              <span class="badge-count" id="count정직">4</span>
+            </li>
+            <li class="nav-virtue-item" onclick="setVirtueFilter('협동')">
+              <span>🌟 협동</span>
+              <span class="badge-count" id="count협동">4</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 생활영역 필터 -->
+        <div class="card">
+          <div class="card-title">
+            <span>🏡</span> 생활 영역
+          </div>
+          <div class="domain-filter-group">
+            <button class="domain-filter-btn active" id="btnDomainAll" onclick="setDomainFilter('all')">전체</button>
+            <button class="domain-filter-btn" id="btnDomainHome" onclick="setDomainFilter('가정생활')">가정생활</button>
+            <button class="domain-filter-btn" id="btnDomainSchool" onclick="setDomainFilter('학교생활')">학교생활</button>
+          </div>
+        </div>
+
+        <!-- 1~4점 척도 설명 카드 -->
+        <div class="card">
+          <div class="card-title">
+            <span>⭐</span> 평가 점수 의미
+          </div>
+          <div class="scale-guide-list">
+            <div class="scale-guide-item">
+              <span class="scale-pill scale-1">1</span>
+              <div>
+                <strong>아직 서툴러요 🌱</strong>
+                <div style="font-size: 0.75rem; color: #64748b;">앞으로 노력이 필요해요</div>
+              </div>
+            </div>
+            <div class="scale-guide-item">
+              <span class="scale-pill scale-2">2</span>
+              <div>
+                <strong>가끔 실천해요 🌿</strong>
+                <div style="font-size: 0.75rem; color: #64748b;">조금씩 해보고 있어요</div>
+              </div>
+            </div>
+            <div class="scale-guide-item">
+              <span class="scale-pill scale-3">3</span>
+              <div>
+                <strong>자주 실천해요 🌸</strong>
+                <div style="font-size: 0.75rem; color: #64748b;">스스로 잘하고 있어요</div>
+              </div>
+            </div>
+            <div class="scale-guide-item">
+              <span class="scale-pill scale-4">4</span>
+              <div>
+                <strong>항상 실천해요 🌳</strong>
+                <div style="font-size: 0.75rem; color: #64748b;">언제나 멋지게 실천해요</div>
+              </div>
+            </div>
+            <div class="scale-guide-item" id="teacherScaleGuide" style="display:none;">
+              <span class="scale-pill scale-none">-</span>
+              <div>
+                <strong>관찰하지 못함 👁️</strong>
+                <div style="font-size: 0.75rem; color: #64748b;">교사 관찰 불가 문항(점수 계산 제외)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 학생 성찰 응원 안내 -->
+        <div class="card" style="background: #fdf4ff; border-color: #f5d0fe;">
+          <div style="font-weight: 800; font-size: 0.9rem; color: #86198f; margin-bottom: 0.4rem;">
+            💌 스스로 돌아보는 마음
+          </div>
+          <p style="font-size: 0.85rem; color: #701a75; line-height: 1.5;">
+            인성 평가는 점수를 매겨 비교하는 시험이 아니에요. 나의 멋진 점을 발견하고 한 걸음 더 자라나기 위한 소중한 시간입니다!
+          </p>
+        </div>
+      </aside>
+
+      <!-- [가운데 영역] 체크리스트 문항 카드 영역 -->
+      <section class="center-column">
+        <!-- 배너 안내 -->
+        <div class="section-banner">
+          <div class="banner-text">
+            <h2 id="activeBannerTitle">나의 인성 실천 체크리스트</h2>
+            <p id="activeBannerDesc">평소 나의 생활 모습을 떠올리며 솔직하게 체크해 보세요.</p>
+          </div>
+          <div class="filter-summary" id="filterSummaryText">전체 20문항</div>
+        </div>
+
+        <!-- 문항 카드 리스트 -->
+        <div class="question-list" id="questionCardContainer">
+          <!-- 자바스크립트로 동적 렌더링 -->
+        </div>
+
+        <!-- 하단 저장 및 빠른 채우기 바 -->
+        <div class="submit-bar">
+          <div>
+            <span style="font-weight: 700; font-size: 0.95rem;" id="completionStatusText">
+              선택 완료: 0 / 20
+            </span>
+            <div style="font-size: 0.8rem; color: #64748b;">
+              모든 문항을 선택하면 AI 분석과 비교 결과가 나타납니다.
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button type="button" class="quick-fill-btn" onclick="quickFillSampleData()">
+              🎲 예시 점수 채우기
+            </button>
+            <button type="button" class="primary-save-btn" onclick="saveCurrentEvaluation()">
+              <span>💾</span> 평가 저장 및 분석
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- [오른쪽 영역] 덕목별 비교 차트 & AI 맞춤형 피드백 -->
+      <aside class="right-column">
+        <!-- 덕목별 평가 결과 및 학생 vs 교사 비교 차트 -->
+        <div class="card">
+          <div class="card-title">
+            <span>📊</span> 인성덕목별 평가 비교
+          </div>
+          <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.6rem;">
+            <span style="display:inline-block; width:10px; height:10px; background:#10b981; border-radius:2px; margin-right:4px;"></span>학생 자기평가
+            <span style="display:inline-block; width:10px; height:10px; background:#3b82f6; border-radius:2px; margin-left:10px; margin-right:4px;"></span>교사 관찰평가
+          </div>
+
+          <div class="chart-container" id="virtueCompareBars">
+            <!-- 5개 덕목 바가 렌더링됨 -->
+          </div>
+
+          <div id="evalStatusNotice" style="margin-top: 0.75rem; padding: 0.65rem; background: #f8fafc; border-radius: 8px; font-size: 0.85rem; color: #475569;">
+            학생 평가와 교사 관찰 평가를 모두 완료하면 비교 분석이 활성화됩니다.
+          </div>
+        </div>
+
+        <!-- AI 맞춤형 피드백 카드 -->
+        <div class="card ai-card">
+          <div class="ai-header">
+            <div class="ai-title-wrap">
+              <span style="font-size: 1.3rem;">🤖</span>
+              <strong style="font-size: 1.05rem; color: #1e1b4b;">AI 성장 조력자 피드백</strong>
+            </div>
+            <span class="ai-badge">맞춤 분석</span>
+          </div>
+
+          <!-- 1. 잘한 점 -->
+          <div class="ai-section-box" style="border-left: 3px solid #10b981;">
+            <div class="ai-section-title" style="color: #065f46;">
+              <span>🌟</span> 내가 가장 잘하고 있는 점
+            </div>
+            <p class="ai-text" id="aiStrengthText">
+              평가를 작성하면 학생이 가장 멋지게 실천하고 있는 강점 덕목을 칭찬해 드려요!
+            </p>
+          </div>
+
+          <!-- 2. 함께 생각해 볼 점 -->
+          <div class="ai-section-box" style="border-left: 3px solid #3b82f6;">
+            <div class="ai-section-title" style="color: #1e40af;">
+              <span>🤔</span> 함께 돌아보고 생각해 볼 점
+            </div>
+            <p class="ai-text" id="aiReflectText">
+              학생과 선생님의 생각이 다르거나 노력이 필요한 부분에 대해 스스로 생각해 볼 질문을 드려요.
+            </p>
+          </div>
+
+          <!-- 3. AI 성장 조언 -->
+          <div class="ai-section-box" style="border-left: 3px solid #8b5cf6;">
+            <div class="ai-section-title" style="color: #5b21b6;">
+              <span>💡</span> 한 걸음 더 자라나는 AI 성장 조언
+            </div>
+            <p class="ai-text" id="aiGrowthAdviceText">
+              평가를 완료하면 학생의 마음에 힘이 되는 따뜻한 성장 조언을 남겨줍니다.
+            </p>
+          </div>
+
+          <!-- 4. 추천 실천 목표 -->
+          <div class="ai-section-box" style="border-left: 3px solid #f59e0b;">
+            <div class="ai-section-title" style="color: #92400e;">
+              <span>🎯</span> 오늘부터 실천할 수 있는 추천 목표
+            </div>
+            <div class="goal-list" id="aiRecommendedGoals">
+              <button class="goal-item-btn" onclick="applyRecommendedGoal('친구와 가족에게 고마운 마음을 말로 표현하기')">
+                👉 친구와 가족에게 고마운 마음을 말로 표현하기
+              </button>
+              <button class="goal-item-btn" onclick="applyRecommendedGoal('내가 사용한 물건은 제자리에 바로 정리하기')">
+                👉 내가 사용한 물건은 제자리에 바로 정리하기
+              </button>
+              <button class="goal-item-btn" onclick="applyRecommendedGoal('모둠 활동에서 친구의 의견을 끝까지 귀 기울여 듣기')">
+                👉 모둠 활동에서 친구의 의견을 끝까지 귀 기울여 듣기
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+
+    <!-- ===== [하단 영역] 최종 자기평가 & 실천 목표 설정 & 성장 기록 ===== -->
+    <section class="bottom-section">
+      <div class="bottom-grid">
+        
+        <!-- 1. 학생 최종 자기평가 직접 결정 -->
+        <div class="card">
+          <div class="card-title">
+            <span>✨</span> 1. 나의 최종 자기평가 점수 결정하기
+          </div>
+          <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;">
+            AI와 선생님의 평가를 참고하여, <strong>내가 스스로 생각하는 최종 점수</strong>를 직접 결정해 보세요. (AI가 임의로 수정하지 않습니다)
+          </p>
+
+          <table class="final-eval-table">
+            <thead>
+              <tr>
+                <th>인성덕목</th>
+                <th>학생</th>
+                <th>교사</th>
+                <th>내가 결정한 최종 점수</th>
+              </tr>
+            </thead>
+            <tbody id="finalEvalTableBody">
+              <!-- 배려, 존중, 책임, 정직, 협동 행 렌더링 -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 2. 나의 실천 목표 수립 & 성장 기록 -->
+        <div class="card">
+          <div class="card-title">
+            <span>🌱</span> 2. 나의 생활 속 실천 목표 세우기
+          </div>
+          <p style="font-size: 0.85rem; color: #64748b;">
+            위의 추천 목표를 클릭하거나, 나만의 다짐을 직접 적어보세요. 다음 평가에서 실천 여부를 확인합니다!
+          </p>
+
+          <div class="goal-input-wrap">
+            <input type="text" id="customGoalInput" class="goal-input" placeholder="예: 하루에 한 번 친구에게 칭찬 한마디 건네기" maxlength="100">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; color:#64748b;">
+              <span>실천 여부 상태: <strong id="goalPracticeStatus" style="color:#0284c7;">실천 시작 🌱</strong></span>
+              <button type="button" class="header-action-btn" onclick="togglePracticeStatus()">상태 변경</button>
+            </div>
+          </div>
+
+          <!-- 이전 평가 대비 성장 기록 히스토리 -->
+          <div style="margin-top: 1.25rem;">
+            <div style="font-weight: 800; font-size: 0.9rem; color: var(--text-main); margin-bottom: 0.35rem;">
+              📈 나의 인성 성장 변화 기록
+            </div>
+            <div class="growth-history-box" id="growthHistoryContainer">
+              <div class="growth-item">
+                <span style="font-size:0.85rem;">1회차와 2회차 평가가 누적되면 성장 변화 추이를 보여줍니다.</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- 최종 저장 및 동기화 액션 바 -->
+      <div class="final-action-footer">
+        <div>
+          <div style="font-weight: 800; font-size: 1.05rem; color: #0f172a;">
+            인성체크리스트 종합 저장
+          </div>
+          <div style="font-size: 0.85rem; color: #64748b;">
+            학생 자기평가, 교사 관찰평가, 최종 결정 점수, 실천 목표를 안전하게 저장합니다.
+          </div>
+        </div>
+        <button type="button" class="btn-finish-all" onclick="saveAllFinalResults()">
+          <span>🌟</span> 최종 평가 및 실천목표 확정 저장
+        </button>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ===== MODAL 1: 학급 전체 현황 (교사용 대시보드) ===== -->
+  <div class="modal-backdrop" id="classDashboardModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">📊 3학년 1반 인성체크리스트 학급 전체 현황</div>
+        <button class="modal-close-btn" onclick="closeClassDashboardModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.9rem; color: #475569; margin-bottom: 1rem;">
+          가상 학생 20명의 평가 진행 현황과 덕목별 평균 점수입니다. 학생 이름을 클릭하면 해당 학생 평가로 바로 이동합니다.
+        </p>
+
+        <div style="overflow-x: auto;">
+          <table class="class-summary-table">
+            <thead>
+              <tr>
+                <th>학생ID</th>
+                <th>이름</th>
+                <th>학생평가</th>
+                <th>교사평가</th>
+                <th>최종평가</th>
+                <th>배려</th>
+                <th>존중</th>
+                <th>책임</th>
+                <th>정직</th>
+                <th>협동</th>
+                <th>실천목표</th>
+                <th>이동</th>
+              </tr>
+            </thead>
+            <tbody id="classSummaryTableBody">
+              <!-- 20명 학생 요약 렌더링 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="header-action-btn" onclick="exportFiveSheetsCSV()">
+          <span>📥</span> 5개 시트 CSV 다운로드
+        </button>
+        <button class="header-action-btn" onclick="window.print()">
+          <span>🖨️</span> 학급 결과표 인쇄
+        </button>
+        <button class="primary-save-btn" onclick="closeClassDashboardModal()">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL 2: 구글 스프레드시트 연동 설정 ===== -->
+  <div class="modal-backdrop" id="syncSettingsModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">☁️ 구글 스프레드시트 연동 및 Code.gs 안내</div>
+        <button class="modal-close-btn" onclick="closeSyncSettingsModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="font-size: 0.9rem; color: #334155; line-height: 1.6; margin-bottom: 1rem;">
+          <strong>구글 스프레드시트 5대 시트 자동 연동 안내</strong><br>
+          스프레드시트의 5개 시트(<code>학생정보</code>, <code>인성체크리스트</code>, <code>평가결과</code>, <code>AI피드백</code>, <code>성장기록</code>)와 안전하게 동기화할 수 있습니다.
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:0.35rem;">
+            Google Apps Script 웹 앱 배포 URL:
+          </label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="url" id="gasEndpointInput" class="goal-input" placeholder="https://script.google.com/macros/s/.../exec">
+            <button class="header-action-btn" onclick="testGasConnection()">연결 테스트</button>
+            <button class="primary-save-btn" onclick="saveGasEndpoint()">저장</button>
+          </div>
+          <div id="gasStatusResult" style="font-size: 0.8rem; margin-top: 0.4rem; color: #64748b;">
+            * URL을 등록하지 않아도 로컬 저장소(localStorage)와 CSV 내보내기로 모든 기능이 완벽하게 작동합니다.
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+            <strong>Code.gs 스크립트 코드</strong>
+            <button class="header-action-btn" onclick="copyGasCode()">코드 복사하기</button>
+          </div>
+          <pre class="code-view" id="gasCodeView"></pre>
+        </div>
+
+        <div style="margin-top: 1.5rem; border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
+          <strong style="display:block; margin-bottom:0.5rem;">오프라인 백업 및 CSV 내보내기</strong>
+          <button class="header-action-btn" onclick="exportFiveSheetsCSV()">
+            <span>📥</span> 5개 시트 스키마 CSV 일괄 다운로드
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="primary-save-btn" onclick="closeSyncSettingsModal()">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 토스트 메시지 컨테이너 -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ===== APPLICATION LOGIC (PURE JAVASCRIPT) ===== -->
+  <script>
+    /**
+     * [1. DATA CONSTANTS & SCHEMA]
+     * 20명의 가상 학생 데이터 (S01 ~ S20)
+     */
+    const VIRTUAL_STUDENTS = Array.from({ length: 20 }, (_, i) => {
+      const num = String(i + 1).padStart(2, '0');
+      return {
+        id: `S${num}`,
+        name: `학생${num}`,
+        grade: 3,
+        classNum: 1
+      };
+    });
+
+    /**
+     * 5대 인성덕목 20개 구체적 실천 체크리스트 (가정생활 2 + 학교생활 2)
+     */
+    const CHECKLIST_QUESTIONS = [
+      // 1. 배려
+      { id: "M01", virtue: "배려", domain: "가정생활", question: "가족이 힘들어할 때 따뜻한 위로의 말을 건네거나 집안일을 돕는다.", scale: "1~4점" },
+      { id: "M02", virtue: "배려", domain: "가정생활", question: "다른 가족이 쉬거나 공부할 때 시끄럽지 않게 조용히 배려한다.", scale: "1~4점" },
+      { id: "M03", virtue: "배려", domain: "학교생활", question: "어려움을 겪고 있는 친구를 보면 먼저 다가가 따뜻하게 도와준다.", scale: "1~4점" },
+      { id: "M04", virtue: "배려", domain: "학교생활", question: "줄을 서거나 물건을 함께 사용할 때 양보하는 마음을 실천한다.", scale: "1~4점" },
+
+      // 2. 존중
+      { id: "M05", virtue: "존중", domain: "가정생활", question: "부모님과 가족에게 바르고 고운 높임말과 예절을 사용한다.", scale: "1~4점" },
+      { id: "M06", virtue: "존중", domain: "가정생활", question: "가족의 의견이나 취향이 나와 달라도 끝까지 귀 기울여 듣고 인정한다.", scale: "1~4점" },
+      { id: "M07", virtue: "존중", domain: "학교생활", question: "친구의 다른 점(외모, 생각, 특기)을 놀리지 않고 소중하게 대한다.", scale: "1~4점" },
+      { id: "M08", virtue: "존중", domain: "학교생활", question: "선생님과 친구들이 말할 때 끼어들지 않고 경청한다.", scale: "1~4점" },
+
+      // 3. 책임
+      { id: "M09", virtue: "책임", domain: "가정생활", question: "내가 사용한 물건과 내 방을 스스로 정리정돈한다.", scale: "1~4점" },
+      { id: "M10", virtue: "책임", domain: "가정생활", question: "매일 해야 할 숙제와 다음 날 학교 준비물을 스스로 챙긴다.", scale: "1~4점" },
+      { id: "M11", virtue: "책임", domain: "학교생활", question: "내가 맡은 1인 1역할(청소, 당번 활동 등)을 끝까지 성실하게 해낸다.", scale: "1~4점" },
+      { id: "M12", virtue: "책임", domain: "학교생활", question: "학급 규칙과 수업 시작 시간을 잘 지키고 약속을 이행한다.", scale: "1~4점" },
+
+      // 4. 정직
+      { id: "M13", virtue: "정직", domain: "가정생활", question: "잘못한 일이 있을 때 숨기거나 변명하지 않고 솔직하게 말씀드린다.", scale: "1~4점" },
+      { id: "M14", virtue: "정직", domain: "가정생활", question: "부모님과의 약속(스마트폰 및 게임 시간 등)을 속이지 않고 지킨다.", scale: "1~4점" },
+      { id: "M15", virtue: "정직", domain: "학교생활", question: "시험이나 과제 활동을 할 때 정직하고 성실하게 참여한다.", scale: "1~4점" },
+      { id: "M16", virtue: "정직", domain: "학교생활", question: "친구의 물건을 허락 없이 만지지 않고, 떨어진 물건의 주인을 찾아준다.", scale: "1~4점" },
+
+      // 5. 협동
+      { id: "M17", virtue: "협동", domain: "가정생활", question: "온 가족이 함께하는 청소나 식사 준비에 기쁜 마음으로 참여한다.", scale: "1~4점" },
+      { id: "M18", virtue: "협동", domain: "가정생활", question: "가족 간에 의견 충돌이 있을 때 양보하고 사이좋게 협력한다.", scale: "1~4점" },
+      { id: "M19", virtue: "협동", domain: "학교생활", question: "모둠 활동(조별 학습, 체육)에서 내 역할을 다하며 친구들과 힘을 모은다.", scale: "1~4점" },
+      { id: "M20", virtue: "협동", domain: "학교생활", question: "친구들과 놀이를 할 때 규칙을 지키며 모두가 즐겁게 어울린다.", scale: "1~4점" }
+    ];
+
+    const VIRTUES = ["배려", "존중", "책임", "정직", "협동"];
+
+    /**
+     * [2. STATE MANAGEMENT]
+     */
+    let currentRole = "student"; // 'student' | 'teacher'
+    let currentStudentId = "S01";
+    let currentRound = 1;
+    let currentDate = new Date().toISOString().split("T")[0];
+    let activeVirtueFilter = "all";
+    let activeDomainFilter = "all";
+
+    // 저장소 키
+    const STORAGE_KEY = "CHARACTER_CHECKLIST_DATA_V1";
+    const GAS_URL_KEY = "CHARACTER_CHECKLIST_GAS_URL";
+
+    // 앱 데이터베이스 구조 (5개 시트 모델과 1:1 대응)
+    let appData = {
+      evaluations: {},  // key: `${studentId}_R${round}_${evalType}_${questionId}` -> { score, memo, date }
+      finalDecisions: {}, // key: `${studentId}_R${round}` -> { virtueScores: {}, goal: '', status: '', date: '' }
+      aiFeedbacks: {},    // key: `${studentId}_R${round}` -> { strength, reflect, advice, goals, date }
+      growthRecords: {}   // key: `${studentId}` -> array of history records
+    };
+
+    /**
+     * 로컬 스토리지 데이터 로드 및 초기화
+     */
+    function loadAppData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          appData = JSON.parse(raw);
+        }
+      } catch (e) {
+        console.error("데이터 로드 오류:", e);
+      }
+    }
+
+    function saveAppData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      } catch (e) {
+        console.error("데이터 저장 오류:", e);
+      }
+    }
+
+    /**
+     * [3. INITIALIZATION]
+     */
+    window.addEventListener("DOMContentLoaded", () => {
+      loadAppData();
+
+      // 학생 셀렉트 박스 채우기
+      const studentSelect = document.getElementById("studentSelect");
+      studentSelect.innerHTML = "";
+      VIRTUAL_STUDENTS.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s.id;
+        opt.textContent = `${s.name} (${s.id})`;
+        studentSelect.appendChild(opt);
+      });
+
+      // 날짜 기본값
+      document.getElementById("evalDateInput").value = currentDate;
+
+      // Apps Script 코드 미리보기 설정
+      const gasCodeView = document.getElementById("gasCodeView");
+      if (gasCodeView) {
+        gasCodeView.textContent = getGasCodeSnippet();
+      }
+
+      const savedGasUrl = localStorage.getItem(GAS_URL_KEY) || "";
+      const gasInput = document.getElementById("gasEndpointInput");
+      if (gasInput) gasInput.value = savedGasUrl;
+
+      // 초기 렌더링
+      renderHeaderStatus();
+      renderQuestions();
+      renderComparisonChart();
+      renderAiFeedbackCard();
+      renderFinalEvaluationTable();
+      renderGrowthHistory();
+    });
+
+    /**
+     * [4. EVENT HANDLERS & MODES]
+     */
+    function switchRoleMode(mode) {
+      currentRole = mode;
+      const btnStudent = document.getElementById("btnStudentMode");
+      const btnTeacher = document.getElementById("btnTeacherMode");
+      const roleIndicator = document.getElementById("roleIndicatorBadge");
+      const teacherScale = document.getElementById("teacherScaleGuide");
+
+      if (mode === "student") {
+        btnStudent.classList.add("active");
+        btnTeacher.classList.remove("active");
+        roleIndicator.textContent = "학생 모드";
+        roleIndicator.style.background = "#10b981";
+        if (teacherScale) teacherScale.style.display = "none";
+        showToast("🌱 학생 자기평가 모드로 전환되었습니다.");
+      } else {
+        btnStudent.classList.remove("active");
+        btnTeacher.classList.add("active");
+        roleIndicator.textContent = "교사 모드";
+        roleIndicator.style.background = "#3b82f6";
+        if (teacherScale) teacherScale.style.display = "flex";
+        showToast("👨‍🏫 교사 관찰평가 모드로 전환되었습니다.");
+      }
+
+      renderQuestions();
+      renderComparisonChart();
+      renderAiFeedbackCard();
+    }
+
+    function onStudentChange() {
+      const select = document.getElementById("studentSelect");
+      currentStudentId = select.value;
+      renderHeaderStatus();
+      renderQuestions();
+      renderComparisonChart();
+      renderAiFeedbackCard();
+      renderFinalEvaluationTable();
+      renderGrowthHistory();
+    }
+
+    function onRoundChange() {
+      const roundSelect = document.getElementById("evalRoundSelect");
+      currentRound = parseInt(roundSelect.value, 10);
+      renderHeaderStatus();
+      renderQuestions();
+      renderComparisonChart();
+      renderAiFeedbackCard();
+      renderFinalEvaluationTable();
+      renderGrowthHistory();
+    }
+
+    function onDateChange() {
+      const dateInput = document.getElementById("evalDateInput");
+      currentDate = dateInput.value || new Date().toISOString().split("T")[0];
+    }
+
+    function renderHeaderStatus() {
+      const student = VIRTUAL_STUDENTS.find(s => s.id === currentStudentId);
+      const titleElem = document.getElementById("currentStudentTitle");
+      if (student && titleElem) {
+        titleElem.textContent = `${student.name} (${student.id}) · ${student.grade}학년 ${student.classNum}반 (${currentRound}회차)`;
+      }
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const evalType = currentRole; // 'student' | 'teacher'
+      let answeredCount = 0;
+
+      CHECKLIST_QUESTIONS.forEach(q => {
+        const key = getEvalKey(currentStudentId, currentRound, evalType, q.id);
+        if (appData.evaluations[key] && appData.evaluations[key].score != null) {
+          answeredCount++;
+        }
+      });
+
+      const total = CHECKLIST_QUESTIONS.length;
+      const pct = Math.round((answeredCount / total) * 100);
+
+      const fill = document.getElementById("progressBarFill");
+      const text = document.getElementById("progressText");
+      const statusText = document.getElementById("completionStatusText");
+
+      if (fill) fill.style.width = `${pct}%`;
+      if (text) text.textContent = `${answeredCount} / ${total} 완료 (${pct}%)`;
+      if (statusText) statusText.textContent = `선택 완료: ${answeredCount} / ${total}`;
+    }
+
+    function setVirtueFilter(virtue) {
+      activeVirtueFilter = virtue;
+      document.querySelectorAll(".nav-virtue-item").forEach(item => item.classList.remove("active"));
+      
+      const targetId = virtue === "all" ? "countAll" : `count${virtue}`;
+      const parent = document.getElementById(targetId)?.parentElement;
+      if (parent) parent.classList.add("active");
+
+      renderQuestions();
+    }
+
+    function setDomainFilter(domain) {
+      activeDomainFilter = domain;
+      document.getElementById("btnDomainAll").classList.remove("active");
+      document.getElementById("btnDomainHome").classList.remove("active");
+      document.getElementById("btnDomainSchool").classList.remove("active");
+
+      if (domain === "all") document.getElementById("btnDomainAll").classList.add("active");
+      if (domain === "가정생활") document.getElementById("btnDomainHome").classList.add("active");
+      if (domain === "학교생활") document.getElementById("btnDomainSchool").classList.add("active");
+
+      renderQuestions();
+    }
+
+    function getEvalKey(studentId, round, type, questionId) {
+      return `${studentId}_R${round}_${type}_${questionId}`;
+    }
+
+    /**
+     * [5. QUESTIONS RENDERING]
+     */
+    function renderQuestions() {
+      const container = document.getElementById("questionCardContainer");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const filteredQuestions = CHECKLIST_QUESTIONS.filter(q => {
+        const matchVirtue = (activeVirtueFilter === "all" || q.virtue === activeVirtueFilter);
+        const matchDomain = (activeDomainFilter === "all" || q.domain === activeDomainFilter);
+        return matchVirtue && matchDomain;
+      });
+
+      // 배너 텍스트 업데이트
+      const bannerTitle = document.getElementById("activeBannerTitle");
+      const bannerDesc = document.getElementById("activeBannerDesc");
+      const summaryText = document.getElementById("filterSummaryText");
+
+      if (summaryText) summaryText.textContent = `${filteredQuestions.length}문항 표시 중`;
+      if (bannerTitle) {
+        if (currentRole === "student") {
+          bannerTitle.textContent = activeVirtueFilter === "all" ? "나의 인성 실천 체크리스트" : `[${activeVirtueFilter}] 실천 체크리스트`;
+          bannerDesc.textContent = "가정생활과 학교생활에서 나의 모습을 솔직하게 되돌아보아요.";
+        } else {
+          bannerTitle.textContent = activeVirtueFilter === "all" ? "교사 관찰 체크리스트" : `[${activeVirtueFilter}] 교사 관찰 체크리스트`;
+          bannerDesc.textContent = "학생의 생활 모습을 관찰한 결과를 평가해 주세요. (가정생활 등 관찰 불가 시 '관찰하지 못함' 선택)";
+        }
+      }
+
+      filteredQuestions.forEach((q, idx) => {
+        const card = document.createElement("div");
+        card.className = "question-card";
+        card.id = `qCard_${q.id}`;
+
+        const currentKey = getEvalKey(currentStudentId, currentRound, currentRole, q.id);
+        const savedItem = appData.evaluations[currentKey];
+        const selectedScore = savedItem ? savedItem.score : null;
+
+        if (selectedScore !== null) {
+          card.classList.add("answered");
+        }
+
+        // 상대방 평가 참고 뱃지 (교사 모드일 때 학생 자기평가 점수 표시)
+        let peerBadgeHtml = "";
+        if (currentRole === "teacher") {
+          const studentKey = getEvalKey(currentStudentId, currentRound, "student", q.id);
+          const studentScore = appData.evaluations[studentKey]?.score;
+          if (studentScore != null) {
+            peerBadgeHtml = `<span class="peer-reference-badge">학생 평가: ${studentScore}점</span>`;
+          }
+        }
+
+        // 1~4점 척도 버튼
+        const scaleLabels = [
+          { val: 1, text: "아직 서툴러요 🌱" },
+          { val: 2, text: "가끔 실천해요 🌿" },
+          { val: 3, text: "자주 실천해요 🌸" },
+          { val: 4, text: "항상 실천해요 🌳" }
+        ];
+
+        let buttonsHtml = scaleLabels.map(s => {
+          const isSelected = selectedScore === s.val;
+          const selectClass = isSelected ? (currentRole === "student" ? "selected" : "selected-teacher") : "";
+          return `
+            <button type="button" class="score-option-btn ${selectClass}" onclick="handleScoreSelect('${q.id}', ${s.val})">
+              <span class="score-num">${s.val}점</span>
+              <span class="score-label">${s.text}</span>
+            </button>
+          `;
+        }).join("");
+
+        // 교사용 관찰하지 못함 버튼
+        if (currentRole === "teacher") {
+          const isNotObserved = selectedScore === -1;
+          buttonsHtml += `
+            <button type="button" class="btn-not-observed ${isNotObserved ? 'selected' : ''}" onclick="handleScoreSelect('${q.id}', -1)">
+              <span style="font-size:1.1rem;">👁️</span>
+              <span>관찰하지 못함</span>
+            </button>
+          `;
+        }
+
+        card.innerHTML = `
+          <div class="question-header">
+            <div class="question-meta">
+              <span class="virtue-tag tag-${q.virtue}">${q.virtue}</span>
+              <span class="domain-tag">${q.domain}</span>
+              <span style="color:#94a3b8; font-size:0.8rem;">문항 ${q.id}</span>
+            </div>
+            ${peerBadgeHtml}
+          </div>
+          <div class="question-text">${q.question}</div>
+          <div class="score-buttons-group">
+            ${buttonsHtml}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      updateVirtueCounts();
+      updateProgress();
+    }
+
+    function updateVirtueCounts() {
+      VIRTUES.forEach(v => {
+        const total = CHECKLIST_QUESTIONS.filter(q => q.virtue === v).length;
+        const elem = document.getElementById(`count${v}`);
+        if (elem) elem.textContent = total;
+      });
+      const allCount = document.getElementById("countAll");
+      if (allCount) allCount.textContent = CHECKLIST_QUESTIONS.length;
+    }
+
+    function handleScoreSelect(questionId, score) {
+      const key = getEvalKey(currentStudentId, currentRound, currentRole, questionId);
+      appData.evaluations[key] = {
+        score: score,
+        date: currentDate,
+        studentId: currentStudentId,
+        questionId: questionId,
+        type: currentRole,
+        evalId: "EV_" + Math.random().toString(36).substr(2, 9)
+      };
+
+      saveAppData();
+      renderQuestions();
+      renderComparisonChart();
+      renderAiFeedbackCard();
+      renderFinalEvaluationTable();
+    }
+
+    /**
+     * [6. EVALUATION SCORING & CALCULATION]
+     * '관찰하지 못함(-1)'은 분모에서 완전 제외
+     */
+    function calculateVirtueAverages(studentId, round) {
+      const results = {};
+
+      VIRTUES.forEach(v => {
+        const questions = CHECKLIST_QUESTIONS.filter(q => q.virtue === v);
+        
+        // 학생 평균
+        let studentTotal = 0;
+        let studentCount = 0;
+        questions.forEach(q => {
+          const sKey = getEvalKey(studentId, round, "student", q.id);
+          const score = appData.evaluations[sKey]?.score;
+          if (score != null && score > 0) {
+            studentTotal += score;
+            studentCount++;
+          }
+        });
+
+        // 교사 평균
+        let teacherTotal = 0;
+        let teacherCount = 0;
+        questions.forEach(q => {
+          const tKey = getEvalKey(studentId, round, "teacher", q.id);
+          const score = appData.evaluations[tKey]?.score;
+          if (score != null && score > 0) { // -1 관찰못함은 제외됨!
+            teacherTotal += score;
+            teacherCount++;
+          }
+        });
+
+        results[v] = {
+          studentAvg: studentCount > 0 ? parseFloat((studentTotal / studentCount).toFixed(2)) : null,
+          teacherAvg: teacherCount > 0 ? parseFloat((teacherTotal / teacherCount).toFixed(2)) : null,
+          studentCount: studentCount,
+          teacherCount: teacherCount,
+          totalQuestions: questions.length
+        };
+      });
+
+      return results;
+    }
+
+    /**
+     * [7. COMPARISON CHART RENDERING]
+     */
+    function renderComparisonChart() {
+      const container = document.getElementById("virtueCompareBars");
+      if (!container) return;
+
+      const averages = calculateVirtueAverages(currentStudentId, currentRound);
+      container.innerHTML = "";
+
+      let hasAnyStudent = false;
+      let hasAnyTeacher = false;
+
+      VIRTUES.forEach(v => {
+        const item = averages[v];
+        if (item.studentAvg !== null) hasAnyStudent = true;
+        if (item.teacherAvg !== null) hasAnyTeacher = true;
+
+        const sScore = item.studentAvg !== null ? item.studentAvg : 0;
+        const tScore = item.teacherAvg !== null ? item.teacherAvg : 0;
+        const sPct = Math.round((sScore / 4) * 100);
+        const tPct = Math.round((tScore / 4) * 100);
+
+        const diffText = (item.studentAvg !== null && item.teacherAvg !== null)
+          ? `(차이: ${Math.abs(item.studentAvg - item.teacherAvg).toFixed(1)}점)`
+          : "";
+
+        const row = document.createElement("div");
+        row.className = "virtue-compare-row";
+        row.innerHTML = `
+          <div class="compare-label-row">
+            <span><strong>${v}</strong> <span style="font-size:0.75rem; color:#64748b;">${diffText}</span></span>
+            <span style="font-size:0.78rem; color:#64748b;">
+              학생: ${item.studentAvg !== null ? item.studentAvg + '점' : '-'} / 교사: ${item.teacherAvg !== null ? item.teacherAvg + '점' : '-'}
+            </span>
+          </div>
+          <div class="compare-bars">
+            <div class="bar-wrapper">
+              <span class="bar-tag">학생</span>
+              <div class="bar-track">
+                <div class="bar-fill-student" style="width: ${sPct}%;"></div>
+              </div>
+              <span class="bar-value" style="color:#059669;">${sScore ? sScore.toFixed(1) : '-'}</span>
+            </div>
+            <div class="bar-wrapper">
+              <span class="bar-tag">교사</span>
+              <div class="bar-track">
+                <div class="bar-fill-teacher" style="width: ${tPct}%;"></div>
+              </div>
+              <span class="bar-value" style="color:#1d4ed8;">${tScore ? tScore.toFixed(1) : '-'}</span>
+            </div>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+
+      const notice = document.getElementById("evalStatusNotice");
+      if (notice) {
+        if (hasAnyStudent && hasAnyTeacher) {
+          notice.style.background = "#ecfdf5";
+          notice.style.color = "#065f46";
+          notice.textContent = "✅ 학생 자기평가와 교사 관찰평가가 성공적으로 연결되어 차이를 비교하고 있습니다.";
+        } else if (hasAnyStudent && !hasAnyTeacher) {
+          notice.style.background = "#eff6ff";
+          notice.style.color = "#1e40af";
+          notice.textContent = "💡 학생 자기평가가 입력되었습니다. 교사 관찰평가가 완료되면 상호 비교가 제공됩니다.";
+        } else {
+          notice.style.background = "#f8fafc";
+          notice.style.color = "#475569";
+          notice.textContent = "평가를 진행하면 5대 인성덕목별 점수 막대가 실시간으로 채워집니다.";
+        }
+      }
+    }
+
+    /**
+     * [8. RULE-BASED ADAPTIVE AI ENGINE]
+     * 외부 LLM 없이도 초등학생 눈높이에 맞춘 다정한 피드백 생성
+     */
+    function generateAiAdaptiveFeedback(studentId, round) {
+      const averages = calculateVirtueAverages(studentId, round);
+      const student = VIRTUAL_STUDENTS.find(s => s.id === studentId);
+      const studentName = student ? student.name : "학생";
+
+      // 1. 강점 덕목 찾기 (학생+교사 평균 최고점)
+      let highestVirtue = null;
+      let highestScore = -1;
+
+      // 2. 노력 필요 덕목 찾기 (학생+교사 평균 최저점)
+      let lowestVirtue = null;
+      let lowestScore = 999;
+
+      // 3. 차이가 큰 덕목 찾기 (시각 차이 분석)
+      let maxDiffVirtue = null;
+      let maxDiff = -1;
+
+      VIRTUES.forEach(v => {
+        const item = averages[v];
+        if (item.studentAvg !== null || item.teacherAvg !== null) {
+          const s = item.studentAvg !== null ? item.studentAvg : (item.teacherAvg || 0);
+          const t = item.teacherAvg !== null ? item.teacherAvg : (item.studentAvg || 0);
+          const combined = (s + t) / 2;
+
+          if (combined > highestScore) {
+            highestScore = combined;
+            highestVirtue = v;
+          }
+          if (combined < lowestScore) {
+            lowestScore = combined;
+            lowestVirtue = v;
+          }
+
+          if (item.studentAvg !== null && item.teacherAvg !== null) {
+            const diff = Math.abs(item.studentAvg - item.teacherAvg);
+            if (diff > maxDiff) {
+              maxDiff = diff;
+              maxDiffVirtue = v;
+            }
+          }
+        }
+      });
+
+      // 피드백 데이터 조립
+      let strengthMsg = "";
+      let reflectMsg = "";
+      let adviceMsg = "";
+      let goals = [];
+
+      if (!highestVirtue) {
+        strengthMsg = "문항에 응답하면 멋지게 실천하고 있는 강점 덕목을 칭찬해 드릴게요!";
+        reflectMsg = "평가가 진행되면 함께 생각해 볼 질문이 나타납니다.";
+        adviceMsg = "자신의 생활을 편안하고 솔직하게 돌아보아요.";
+        goals = [
+          "친구와 가족에게 고마운 마음을 말로 표현하기",
+          "내가 사용한 물건은 제자리에 바로 정리하기",
+          "모둠 활동에서 친구의 의견을 끝까지 귀 기울여 듣기"
+        ];
+      } else {
+        // 강점 피드백 문구
+        const strengthTemplates = {
+          "배려": `${studentName}님은 주변 사람들의 마음을 헤아리고 따뜻한 손길을 건네는 '배려'의 싹을 멋지게 틔우고 있어요! 가족과 친구들에게 힘이 되는 소중한 보물이에요.`,
+          "존중": `${studentName}님은 다른 사람의 생각과 마음을 소중히 여기며 예의 바르게 대하는 '존중'의 태도가 아주 훌륭해요! 덕분에 교실과 가정이 더 따뜻해집니다.`,
+          "책임": `${studentName}님은 자신이 맡은 일과 약속을 성실하게 완수하는 '책임' 덕목이 돋보여요! 믿음직스러운 모습이 매우 자랑스럽습니다.`,
+          "정직": `${studentName}님은 언제나 솔직하고 떳떳하게 행동하는 '정직'의 마음을 훌륭하게 지키고 있어요! 참된 용기를 가진 멋진 학생입니다.`,
+          "협동": `${studentName}님은 친구들과 힘을 모아 함께 어울리고 도와주는 '협동' 정신이 아주 빛나요! 모두가 함께하고 싶어 하는 친구예요.`
+        };
+        strengthMsg = strengthTemplates[highestVirtue] || `${highestVirtue} 덕목에서 아주 모범적인 모습을 보여주고 있습니다.`;
+
+        // 차이 및 성찰 피드백
+        if (maxDiffVirtue && maxDiff >= 0.8) {
+          const sVal = averages[maxDiffVirtue].studentAvg;
+          const tVal = averages[maxDiffVirtue].teacherAvg;
+          if (sVal > tVal) {
+            reflectMsg = `'${maxDiffVirtue}' 덕목에서 스스로는 잘하고 있다고 느꼈지만, 선생님께서 미처 다 보지 못하셨을 수 있어요. 학교에서도 나의 멋진 실천 모습을 조금 더 적극적으로 보여주면 어떨까요?`;
+          } else {
+            reflectMsg = `'${maxDiffVirtue}' 덕목에서 선생님께서는 ${studentName}님이 아주 잘하고 있다고 보셨어요! 스스로에게 조금 더 자신감을 가지고 칭찬해 주어도 좋아요.`;
+          }
+        } else if (lowestVirtue) {
+          reflectMsg = `'${lowestVirtue}' 덕목은 아직 조금 서툴 수 있지만 괜찮아요. 지금부터 작은 행동 하나씩 차근차근 시작해보면 금방 멋지게 자라날 수 있답니다.`;
+        } else {
+          reflectMsg = `가정과 학교에서 꾸준한 마음으로 생활하며 나만의 멋진 모습을 가꾸어가고 있어요.`;
+        }
+
+        // 성장 조언
+        adviceMsg = `${studentName}님은 이미 충분히 훌륭한 인성의 씨앗을 품고 있습니다. 완벽하지 않아도 매일 한 가지씩 착한 마음을 행동으로 옮기면 더욱 반짝이는 친구가 될 거예요!`;
+
+        // 덕목별 맞춤 실천 목표 추천
+        const goalTemplates = {
+          "배려": [
+            "하루에 한 번 가족이나 친구에게 '고마워', '도와줄까?'라고 말하기",
+            "청소 시간이나 줄을 설 때 다른 친구를 위해 한 걸음 양보하기",
+            "친구가 실수했을 때 비웃지 않고 '괜찮아'라고 다정하게 말해주기"
+          ],
+          "존중": [
+            "친구의 외모나 서툰 점을 놀리지 않고 장점 한 가지 찾아 칭찬하기",
+            "선생님과 부모님께 인사할 때 바른 자세로 눈 마주치며 인사하기",
+            "이야기할 때 친구의 말을 끝까지 듣고 내 생각 말하기"
+          ],
+          "책임": [
+            "학교에서 돌아오면 가방과 준비물을 스스로 챙겨두기",
+            "내가 맡은 1인 1역할 청소 구역을 끝까지 깨끗하게 마치기",
+            "정해진 공부 시간과 스마트폰 사용 약속 시간 스스로 지키기"
+          ],
+          "정직": [
+            "실수를 했을 때 핑계를 대지 않고 정직하게 인정하고 사과하기",
+            "바닥에 떨어진 연필이나 학용품의 주인을 찾아주기",
+            "숙제나 과제를 할 때 다른 사람의 것을 베끼지 않고 내 힘으로 하기"
+          ],
+          "협동": [
+            "모둠 활동할 때 내 의견만 고집하지 않고 친구들과 의논하기",
+            "체육이나 놀이 시간에 규칙을 잘 지키고 모두 함께 어울리기",
+            "가족과 함께하는 식사 준비나 집안 청소에 즐겁게 동참하기"
+          ]
+        };
+
+        const targetVirtueForGoals = lowestVirtue || highestVirtue;
+        goals = goalTemplates[targetVirtueForGoals] || [
+          "하루에 한 번 고마운 마음 표현하기",
+          "내 물건 스스로 정리하기",
+          "친구의 말 끝까지 경청하기"
+        ];
+      }
+
+      const feedbackObj = {
+        feedbackId: "FB_" + Math.random().toString(36).substr(2, 9),
+        studentId: studentId,
+        date: currentDate,
+        strength: strengthMsg,
+        reflect: reflectMsg,
+        advice: adviceMsg,
+        goals: goals
+      };
+
+      // 저장소 갱신
+      const key = `${studentId}_R${round}`;
+      appData.aiFeedbacks[key] = feedbackObj;
+      saveAppData();
+
+      return feedbackObj;
+    }
+
+    function renderAiFeedbackCard() {
+      const feedback = generateAiAdaptiveFeedback(currentStudentId, currentRound);
+      
+      const sElem = document.getElementById("aiStrengthText");
+      const rElem = document.getElementById("aiReflectText");
+      const aElem = document.getElementById("aiGrowthAdviceText");
+      const gContainer = document.getElementById("aiRecommendedGoals");
+
+      if (sElem) sElem.textContent = feedback.strength;
+      if (rElem) rElem.textContent = feedback.reflect;
+      if (aElem) aElem.textContent = feedback.advice;
+
+      if (gContainer) {
+        gContainer.innerHTML = "";
+        feedback.goals.forEach(goal => {
+          const btn = document.createElement("button");
+          btn.className = "goal-item-btn";
+          btn.textContent = `👉 ${goal}`;
+          btn.onclick = () => applyRecommendedGoal(goal);
+          gContainer.appendChild(btn);
+        });
+      }
+    }
+
+    function applyRecommendedGoal(goalText) {
+      const input = document.getElementById("customGoalInput");
+      if (input) {
+        input.value = goalText;
+        showToast("🎯 실천 목표에 적용되었습니다: " + goalText);
+      }
+    }
+
+    /**
+     * [9. FINAL EVALUATION & GOAL DETERMINATION]
+     */
+    function renderFinalEvaluationTable() {
+      const tbody = document.getElementById("finalEvalTableBody");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      const averages = calculateVirtueAverages(currentStudentId, currentRound);
+      const finalKey = `${currentStudentId}_R${currentRound}`;
+      const savedFinal = appData.finalDecisions[finalKey] || { virtueScores: {}, goal: '', status: '실천 시작 🌱' };
+
+      // 실천 목표 및 상태 인풋 복원
+      const goalInput = document.getElementById("customGoalInput");
+      const statusSpan = document.getElementById("goalPracticeStatus");
+      if (goalInput && savedFinal.goal) goalInput.value = savedFinal.goal;
+      if (statusSpan && savedFinal.status) statusSpan.textContent = savedFinal.status;
+
+      VIRTUES.forEach(v => {
+        const item = averages[v];
+        const sScore = item.studentAvg !== null ? item.studentAvg : '-';
+        const tScore = item.teacherAvg !== null ? item.teacherAvg : '-';
+        
+        // 학생이 결정한 최종 점수 (기본값: 학생 평균 또는 3점)
+        let finalScore = savedFinal.virtueScores[v];
+        if (finalScore == null && item.studentAvg !== null) {
+          finalScore = Math.round(item.studentAvg);
+        }
+        if (finalScore == null) finalScore = 3;
+
+        const tr = document.createElement("tr");
+
+        let scoreButtonsHtml = [1, 2, 3, 4].map(num => `
+          <button type="button" class="final-score-btn ${finalScore === num ? 'active' : ''}" onclick="setFinalVirtueScore('${v}', ${num})">
+            ${num}
+          </button>
+        `).join("");
+
+        tr.innerHTML = `
+          <td><strong>${v}</strong></td>
+          <td style="color:#059669; font-weight:700;">${sScore}</td>
+          <td style="color:#1d4ed8; font-weight:700;">${tScore}</td>
+          <td>
+            <div class="final-score-selector">
+              ${scoreButtonsHtml}
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function setFinalVirtueScore(virtue, score) {
+      const finalKey = `${currentStudentId}_R${currentRound}`;
+      if (!appData.finalDecisions[finalKey]) {
+        appData.finalDecisions[finalKey] = { virtueScores: {}, goal: '', status: '실천 시작 🌱', date: currentDate };
+      }
+      appData.finalDecisions[finalKey].virtueScores[virtue] = score;
+      saveAppData();
+      renderFinalEvaluationTable();
+    }
+
+    function togglePracticeStatus() {
+      const finalKey = `${currentStudentId}_R${currentRound}`;
+      if (!appData.finalDecisions[finalKey]) {
+        appData.finalDecisions[finalKey] = { virtueScores: {}, goal: '', status: '실천 시작 🌱', date: currentDate };
+      }
+      
+      const current = appData.finalDecisions[finalKey].status;
+      const next = current === '실천 완료 🌳' ? '실천 시작 🌱' : (current === '실천 중 🌿' ? '실천 완료 🌳' : '실천 중 🌿');
+      appData.finalDecisions[finalKey].status = next;
+      
+      const statusSpan = document.getElementById("goalPracticeStatus");
+      if (statusSpan) statusSpan.textContent = next;
+      saveAppData();
+      showToast(`실천 상태가 [${next}]로 변경되었습니다.`);
+    }
+
+    /**
+     * [10. GROWTH HISTORY & MULTI-ROUND COMPARISON]
+     */
+    function renderGrowthHistory() {
+      const container = document.getElementById("growthHistoryContainer");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const r1Key = `${currentStudentId}_R1`;
+      const r2Key = `${currentStudentId}_R2`;
+
+      const r1 = appData.finalDecisions[r1Key];
+      const r2 = appData.finalDecisions[r2Key];
+
+      if (!r1 && !r2) {
+        container.innerHTML = `
+          <div class="growth-item">
+            <span style="font-size:0.85rem; color:#64748b;">아직 저장된 평가 이력이 없습니다. 평가를 완료하고 하단에서 최종 저장해 보세요.</span>
+          </div>
+        `;
+        return;
+      }
+
+      VIRTUES.forEach(v => {
+        const s1 = r1 && r1.virtueScores ? r1.virtueScores[v] : null;
+        const s2 = r2 && r2.virtueScores ? r2.virtueScores[v] : null;
+
+        let diffHtml = "";
+        if (s1 !== null && s2 !== null) {
+          const diff = s2 - s1;
+          if (diff > 0) {
+            diffHtml = `<span class="growth-badge-positive">▲ +${diff}점 성장</span>`;
+          } else if (diff < 0) {
+            diffHtml = `<span style="color:#ef4444; font-weight:700;">▼ ${diff}점</span>`;
+          } else {
+            diffHtml = `<span class="growth-badge-neutral">● 유지 (변화 없음)</span>`;
+          }
+        }
+
+        const item = document.createElement("div");
+        item.className = "growth-item";
+        item.innerHTML = `
+          <div>
+            <strong>${v}</strong>
+            <span style="font-size:0.8rem; color:#64748b; margin-left:8px;">
+              1회차: ${s1 != null ? s1 + '점' : '-'} / 2회차: ${s2 != null ? s2 + '점' : '-'}
+            </span>
+          </div>
+          <div>${diffHtml}</div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    /**
+     * [11. VALIDATION & SAVE ACTIONS]
+     */
+    function saveCurrentEvaluation() {
+      // 필수 응답 검증
+      const missing = [];
+      CHECKLIST_QUESTIONS.forEach(q => {
+        const key = getEvalKey(currentStudentId, currentRound, currentRole, q.id);
+        const saved = appData.evaluations[key];
+        if (!saved || saved.score == null) {
+          missing.push(q);
+        }
+      });
+
+      if (missing.length > 0) {
+        showToast(`⚠️ 미응답 문항이 ${missing.length}개 있습니다. 모든 문항에 응답해 주세요.`);
+        // 첫 번째 미응답 문항으로 스크롤 & 하이라이트
+        const first = missing[0];
+        const card = document.getElementById(`qCard_${first.id}`);
+        if (card) {
+          card.classList.add("highlight-missing");
+          card.scrollIntoView({ behavior: "smooth", block: "center" });
+          setTimeout(() => card.classList.remove("highlight-missing"), 3000);
+        }
+        return;
+      }
+
+      saveAppData();
+      renderComparisonChart();
+      renderAiFeedbackCard();
+      renderFinalEvaluationTable();
+      showToast("💾 평가가 안전하게 저장되었습니다! AI 피드백을 확인해 보세요.");
+    }
+
+    function saveAllFinalResults() {
+      const goalInput = document.getElementById("customGoalInput");
+      const goalText = goalInput ? goalInput.value.trim() : "";
+      const statusSpan = document.getElementById("goalPracticeStatus");
+      const statusText = statusSpan ? statusSpan.textContent : "실천 시작 🌱";
+
+      const finalKey = `${currentStudentId}_R${currentRound}`;
+      if (!appData.finalDecisions[finalKey]) {
+        appData.finalDecisions[finalKey] = { virtueScores: {}, goal: '', status: '', date: currentDate };
+      }
+
+      // 기본 점수 채우기
+      const averages = calculateVirtueAverages(currentStudentId, currentRound);
+      VIRTUES.forEach(v => {
+        if (appData.finalDecisions[finalKey].virtueScores[v] == null) {
+          const avg = averages[v].studentAvg;
+          appData.finalDecisions[finalKey].virtueScores[v] = avg ? Math.round(avg) : 3;
+        }
+      });
+
+      appData.finalDecisions[finalKey].goal = goalText || "매일 실천하는 바른 인성 목표 세우기";
+      appData.finalDecisions[finalKey].status = statusText;
+      appData.finalDecisions[finalKey].date = currentDate;
+
+      saveAppData();
+      renderGrowthHistory();
+      showToast("🎉 인성체크리스트 최종 평가 및 실천 목표가 확정 저장되었습니다!");
+
+      // Google Apps Script 연동이 설정되어 있다면 비동기 자동 동기화 시도
+      syncWithGasIfConfigured();
+    }
+
+    function quickFillSampleData() {
+      CHECKLIST_QUESTIONS.forEach(q => {
+        // 학생 평가: 2~4점 무작위
+        const sKey = getEvalKey(currentStudentId, currentRound, "student", q.id);
+        const sScore = Math.floor(Math.random() * 3) + 2;
+        appData.evaluations[sKey] = {
+          score: sScore,
+          date: currentDate,
+          studentId: currentStudentId,
+          questionId: q.id,
+          type: "student",
+          evalId: "EV_" + Math.random().toString(36).substr(2, 9)
+        };
+
+        // 교사 평가: 2~4점 (가정생활 1문항은 '관찰못함 -1' 시뮬레이션)
+        const tKey = getEvalKey(currentStudentId, currentRound, "teacher", q.id);
+        const isNotObs = (q.domain === "가정생활" && (q.id === "M02" || q.id === "M06"));
+        const tScore = isNotObs ? -1 : (Math.floor(Math.random() * 3) + 2);
+        
+        appData.evaluations[tKey] = {
+          score: tScore,
+          date: currentDate,
+          studentId: currentStudentId,
+          questionId: q.id,
+          type: "teacher",
+          evalId: "EV_" + Math.random().toString(36).substr(2, 9)
+        };
+      });
+
+      // 최종 자기평가 기본 데이터
+      const finalKey = `${currentStudentId}_R${currentRound}`;
+      appData.finalDecisions[finalKey] = {
+        virtueScores: { "배려": 4, "존중": 3, "책임": 4, "정직": 3, "협동": 4 },
+        goal: "하루에 한 번 친구에게 고마운 마음 따뜻하게 표현하기",
+        status: "실천 중 🌿",
+        date: currentDate
+      };
+
+      saveAppData();
+      renderQuestions();
+      renderComparisonChart();
+      renderAiFeedbackCard();
+      renderFinalEvaluationTable();
+      renderGrowthHistory();
+      showToast("🎲 가상 학생의 예시 평가 데이터가 성공적으로 채워졌습니다!");
+    }
+
+    /**
+     * [12. CLASS DASHBOARD MODAL]
+     */
+    function openClassDashboardModal() {
+      const modal = document.getElementById("classDashboardModal");
+      const tbody = document.getElementById("classSummaryTableBody");
+      if (!modal || !tbody) return;
+
+      tbody.innerHTML = "";
+
+      VIRTUAL_STUDENTS.forEach(student => {
+        const averages = calculateVirtueAverages(student.id, currentRound);
+        
+        // 학생/교사 응답 카운트
+        let sCount = 0;
+        let tCount = 0;
+        CHECKLIST_QUESTIONS.forEach(q => {
+          if (appData.evaluations[getEvalKey(student.id, currentRound, 'student', q.id)]?.score != null) sCount++;
+          if (appData.evaluations[getEvalKey(student.id, currentRound, 'teacher', q.id)]?.score != null) tCount++;
+        });
+
+        const sStatus = sCount === 20 ? '<span class="status-done">완료 (20)</span>' : `<span class="status-wait">${sCount}/20</span>`;
+        const tStatus = tCount === 20 ? '<span class="status-done">완료 (20)</span>' : `<span class="status-wait">${tCount}/20</span>`;
+
+        const finalKey = `${student.id}_R${currentRound}`;
+        const finalData = appData.finalDecisions[finalKey];
+        const fStatus = finalData ? '<span class="status-done">확정됨</span>' : '<span class="status-wait">미확정</span>';
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${student.id}</strong></td>
+          <td><strong>${student.name}</strong></td>
+          <td>${sStatus}</td>
+          <td>${tStatus}</td>
+          <td>${fStatus}</td>
+          <td>${averages["배려"].studentAvg != null ? averages["배려"].studentAvg : '-'}</td>
+          <td>${averages["존중"].studentAvg != null ? averages["존중"].studentAvg : '-'}</td>
+          <td>${averages["책임"].studentAvg != null ? averages["책임"].studentAvg : '-'}</td>
+          <td>${averages["정직"].studentAvg != null ? averages["정직"].studentAvg : '-'}</td>
+          <td>${averages["협동"].studentAvg != null ? averages["협동"].studentAvg : '-'}</td>
+          <td style="max-width:140px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; font-size:0.75rem;">
+            ${finalData?.goal || '-'}
+          </td>
+          <td>
+            <button class="header-action-btn" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="jumpToStudent('${student.id}')">
+              평가하기
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      modal.classList.add("open");
+    }
+
+    function closeClassDashboardModal() {
+      document.getElementById("classDashboardModal")?.classList.remove("open");
+    }
+
+    function jumpToStudent(studentId) {
+      document.getElementById("studentSelect").value = studentId;
+      onStudentChange();
+      closeClassDashboardModal();
+    }
+
+    /**
+     * [13. GOOGLE APPS SCRIPT & CSV EXPORT]
+     */
+    function openSyncSettingsModal() {
+      document.getElementById("syncSettingsModal")?.classList.add("open");
+    }
+
+    function closeSyncSettingsModal() {
+      document.getElementById("syncSettingsModal")?.classList.remove("open");
+    }
+
+    function saveGasEndpoint() {
+      const url = document.getElementById("gasEndpointInput")?.value.trim() || "";
+      localStorage.setItem(GAS_URL_KEY, url);
+      showToast("구글 스프레드시트 웹 앱 URL이 저장되었습니다.");
+    }
+
+    async function testGasConnection() {
+      const url = document.getElementById("gasEndpointInput")?.value.trim();
+      const statusResult = document.getElementById("gasStatusResult");
+      if (!url) {
+        showToast("⚠️ 먼저 웹 앱 URL을 입력해 주세요.");
+        return;
+      }
+
+      if (statusResult) statusResult.textContent = "연결 확인 중...";
+
+      try {
+        const res = await fetch(url + "?action=ping", { method: "GET" });
+        const data = await res.json();
+        if (data.status === "success") {
+          statusResult.style.color = "#059669";
+          statusResult.textContent = "✅ 연결 성공! 스프레드시트와 정상 통신할 수 있습니다.";
+          showToast("구글 시트 API와 성공적으로 연결되었습니다.");
+        } else {
+          statusResult.style.color = "#dc2626";
+          statusResult.textContent = "⚠️ 응답 오류: " + data.message;
+        }
+      } catch (err) {
+        statusResult.style.color = "#dc2626";
+        statusResult.textContent = "연결 실패 (CORS 허용 여부 및 웹앱 '모든 사용자' 배포 권한을 확인하세요): " + err.message;
+      }
+    }
+
+    async function syncWithGasIfConfigured() {
+      const url = localStorage.getItem(GAS_URL_KEY);
+      if (!url) return;
+
+      try {
+        const student = VIRTUAL_STUDENTS.find(s => s.id === currentStudentId);
+        const evaluationsList = [];
+        CHECKLIST_QUESTIONS.forEach(q => {
+          ['student', 'teacher'].forEach(t => {
+            const key = getEvalKey(currentStudentId, currentRound, t, q.id);
+            const item = appData.evaluations[key];
+            if (item && item.score != null) {
+              evaluationsList.push({
+                evalId: item.evalId,
+                studentId: currentStudentId,
+                date: item.date || currentDate,
+                questionId: q.id,
+                type: t === 'student' ? '학생' : '교사',
+                score: item.score,
+                memo: item.memo || ''
+              });
+            }
+          });
+        });
+
+        const fb = appData.aiFeedbacks[`${currentStudentId}_R${currentRound}`];
+        const fd = appData.finalDecisions[`${currentStudentId}_R${currentRound}`];
+        const averages = calculateVirtueAverages(currentStudentId, currentRound);
+
+        const growthRecords = VIRTUES.map(v => {
+          const finalScore = fd?.virtueScores ? fd.virtueScores[v] : null;
+          return {
+            recordId: "GR_" + Math.random().toString(36).substr(2, 9),
+            studentId: currentStudentId,
+            date: currentDate,
+            virtue: v,
+            studentAvg: averages[v].studentAvg,
+            teacherAvg: averages[v].teacherAvg,
+            finalAvg: finalScore,
+            goal: fd?.goal || '',
+            isPracticed: fd?.status || '진행중',
+            growthChange: 0
+          };
+        });
+
+        const payload = {
+          action: "saveEvaluation",
+          student: student,
+          questions: CHECKLIST_QUESTIONS,
+          evaluations: evaluationsList,
+          feedback: fb ? {
+            feedbackId: fb.feedbackId,
+            studentId: currentStudentId,
+            date: fb.date,
+            strength: fb.strength,
+            needEffort: fb.reflect,
+            aiMessage: fb.advice,
+            recommendedGoal: (fb.goals || []).join(" / ")
+          } : null,
+          growthRecords: growthRecords
+        };
+
+        await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        showToast("☁️ 구글 스프레드시트에 실시간 전송 완료!");
+      } catch (e) {
+        console.warn("스프레드시트 전송 건너뜀 (로컬스토리지에 안전 저장됨):", e);
+      }
+    }
+
+    /**
+     * 5개 시트 스키마와 100% 일치하는 표준 CSV 내보내기
+     */
+    function exportFiveSheetsCSV() {
+      let csv = "\uFEFF"; // UTF-8 BOM
+
+      // [시트1: 학생정보]
+      csv += "=== 시트1: 학생정보 ===\n";
+      csv += "학생ID,표시명,학년,반\n";
+      VIRTUAL_STUDENTS.forEach(s => {
+        csv += `"${s.id}","${s.name}",${s.grade},${s.classNum}\n`;
+      });
+      csv += "\n";
+
+      // [시트2: 인성체크리스트]
+      csv += "=== 시트2: 인성체크리스트 ===\n";
+      csv += "문항ID,인성덕목,생활영역,체크리스트문항,평가척도\n";
+      CHECKLIST_QUESTIONS.forEach(q => {
+        csv += `"${q.id}","${q.virtue}","${q.domain}","${q.question}","${q.scale}"\n`;
+      });
+      csv += "\n";
+
+      // [시트3: 평가결과]
+      csv += "=== 시트3: 평가결과 ===\n";
+      csv += "평가ID,학생ID,평가날짜,문항ID,평가유형,평가점수,평가메모\n";
+      Object.keys(appData.evaluations).forEach(k => {
+        const item = appData.evaluations[k];
+        const typeLabel = item.type === "student" ? "학생" : (item.type === "teacher" ? "교사" : "최종");
+        csv += `"${item.evalId || k}","${item.studentId}","${item.date}","${item.questionId}","${typeLabel}",${item.score},"${item.memo || ''}"\n`;
+      });
+      csv += "\n";
+
+      // [시트4: AI피드백]
+      csv += "=== 시트4: AI피드백 ===\n";
+      csv += "피드백ID,학생ID,평가날짜,잘한점,노력이필요한점,AI성장피드백,추천실천목표\n";
+      Object.keys(appData.aiFeedbacks).forEach(k => {
+        const fb = appData.aiFeedbacks[k];
+        csv += `"${fb.feedbackId}","${fb.studentId}","${fb.date}","${(fb.strength||'').replace(/"/g, '""')}","${(fb.reflect||'').replace(/"/g, '""')}","${(fb.advice||'').replace(/"/g, '""')}","${((fb.goals||[]).join(';')).replace(/"/g, '""')}"\n`;
+      });
+      csv += "\n";
+
+      // [시트5: 성장기록]
+      csv += "=== 시트5: 성장기록 ===\n";
+      csv += "기록ID,학생ID,평가날짜,인성덕목,학생평균점수,교사평균점수,최종평균점수,실천목표,실천여부,성장변화\n";
+      VIRTUAL_STUDENTS.forEach(s => {
+        [1, 2].forEach(r => {
+          const finalKey = `${s.id}_R${r}`;
+          const fd = appData.finalDecisions[finalKey];
+          if (fd) {
+            const avgs = calculateVirtueAverages(s.id, r);
+            VIRTUES.forEach(v => {
+              const recId = `GR_${s.id}_R${r}_${v}`;
+              csv += `"${recId}","${s.id}","${fd.date || currentDate}","${v}",${avgs[v].studentAvg || ''},${avgs[v].teacherAvg || ''},${fd.virtueScores[v] || ''},"${(fd.goal||'').replace(/"/g, '""')}","${fd.status || ''}",0\n`;
+            });
+          }
+        });
+      });
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `인성체크리스트_5대시트_데이터_${currentDate}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast("📥 5개 시트 통합 CSV 파일이 성공적으로 다운로드되었습니다.");
+    }
+
+    function getGasCodeSnippet() {
+      return `/**
+ * 인성체크리스트 구글 스프레드시트 연동용 Apps Script
+ * 전체 코드는 프로젝트 루트의 Code.gs 파일에서도 확인하실 수 있습니다.
+ */
+function doPost(e) {
+  const contents = JSON.parse(e.postData.contents);
+  // 학생정보, 인성체크리스트, 평가결과, AI피드백, 성장기록 시트에 자동 추가
+  return ContentService.createTextOutput(JSON.stringify({ status: "success" })).setMimeType(ContentService.MimeType.JSON);
+}`;
+    }
+
+    function copyGasCode() {
+      navigator.clipboard.writeText(getGasCodeSnippet()).then(() => {
+        showToast("Code.gs 코드가 클립보드에 복사되었습니다.");
+      });
+    }
+
+    function showToast(message) {
+      const container = document.getElementById("toastContainer");
+      if (!container) return;
+      const toast = document.createElement("div");
+      toast.className = "toast-msg";
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "name": "인성체크리스트",
+  "description": "초등학교 학생과 담임교사를 위한 인성덕목 자기성찰 및 맞춤형 성장 지원 앱",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
